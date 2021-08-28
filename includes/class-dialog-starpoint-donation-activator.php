@@ -30,7 +30,12 @@ class Dialog_Starpoint_Donation_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
-
+		if (!is_plugin_active('contact-form-7/wp-contact-form-7.php')){
+			die('Plugin NOT activated, because CF7 plugin is not activated in your site, Please activate CF7 plugin!!');
+		}
+		if(!class_exists("SOAPClient")){ //Plugin validate soapclient enable or not
+			die('Plugin NOT activated, because SOAPClient is not activated your hosting !!');
+		}
 	}
 
 }

@@ -14,3 +14,11 @@
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
+<h1> <?php echo  'Welcome to settings page.'; ?> </h1>
+<form method="POST" action="options.php">
+<?php
+settings_fields( 'starpoint-donation-setting' );
+do_settings_sections( 'starpoint-donation-setting' );
+submit_button();
+?>
+</form>

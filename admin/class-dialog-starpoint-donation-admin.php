@@ -100,4 +100,102 @@ class Dialog_Starpoint_Donation_Admin {
 
 	}
 
+	public function register_shortcodes(){
+		add_shortcode('starpoint_form',array($this, 'starpoint_form'));
+	}
+	public function starpoint_form()
+	{
+		$cf7formid = get_option( 'cf7_form_id' );
+		// Things that you want to do. 
+		$form = 'form';
+		if($cf7formid){
+			$form .= do_shortcode( '[contact-form-7 id='.$cf7formid.' title="Starpoint Donation form"]' ); 
+		}
+		
+		// Output needs to be return
+		return $form;
+	}
+
+	public function admin_menu() {
+		add_menu_page(
+			'Starpoint donation',
+			'Starpoint donation',
+			'manage_options',
+			$this->plugin_name,
+			array($this, 'form_settings'),
+			'dashicons-hammer',100);
+	}
+
+	public function form_settings() {
+		require_once( plugin_dir_path( __FILE__ ) . 'partials/dialog-starpoint-donation-admin-display.php' );
+	}
+
+	function settings_init() {
+	
+		add_settings_section(
+			'donate_setting_section',
+			'',
+			'',
+			'starpoint-donation-setting'
+		);
+	
+		add_settings_field(
+			'cf7_form_id',
+			'Donation settings',
+			array($this, 'admin_form_setting_markup'),
+			'starpoint-donation-setting',
+			'donate_setting_section'
+		);
+		add_settings_field(
+			'donation_app',
+			'App setting',
+			array($this, 'admin_form_setting_markup_2'),
+			'starpoint-donation-setting',
+			'donate_setting_section'
+		);
+
+		register_setting( 'starpoint-donation-setting', 'cf7_form_id' );
+		register_setting( 'starpoint-donation-setting', 'donation_app' );
+	}
+
+	public function admin_form_setting_markup() {
+		$cf7formid = get_option( 'cf7_form_id' );
+		?>
+		<select id="cf7_form_id" name="cf7_form_id">
+			<option value=""><?php echo esc_attr( __( 'Select page' ) ); ?></option> 
+			<?php 
+			$pages = get_posts(array(
+				'post_type'     => 'wpcf7_contact_form',
+				'numberposts'   => -1
+			));
+			foreach ( $pages as $page ) {
+				$option = '<option value="' . $page->ID . '" '.selected( $cf7formid, $page->ID ).'>';
+				$option .= $page->post_title;
+				$option .= '</option>';
+				echo $option;
+			}
+			?>
+		</select>
+		<?php
+	}
+	public function admin_form_setting_markup_2() {
+		// $donation_app = get_option( 'donation_app' );
+		?>
+		<!-- <select id="donation_app" name="donation_app">
+			<option value=""><?php echo esc_attr( __( 'Select page' ) ); ?></option>  -->
+			<?php 
+			// $pages = get_posts(array(
+			// 	'post_type'     => 'wpcf7_contact_form',
+			// 	'numberposts'   => -1
+			// ));
+			// foreach ( $pages as $page ) {
+			// 	$option = '<option value="' . $page->ID . '" '.selected( $donation_app, $page->ID ).'>';
+			// 	$option .= $page->post_title;
+			// 	$option .= '</option>';
+			// 	echo $option;
+			// }
+			?>
+		<!-- </select> -->
+		<?php
+	}
 }
