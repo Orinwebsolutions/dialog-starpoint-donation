@@ -100,4 +100,22 @@ class Dialog_Starpoint_Donation_Public {
 
 	}
 
+	public function cf7_frontend_form_submission_events()
+	{
+		?>
+		<script type="text/javascript">
+			document.addEventListener( 'wpcf7mailsent', function( event ) {
+				if ( <?php echo get_option( 'cf7_form_id' ); ?> == event.detail.contactFormId ) { //Use this only when targeting specific form.
+					document.getElementById(event.detail.unitTag).style.display = 'none';
+					document.getElementById('donate_otp').style.display = 'block';
+					setTimeout(function(){ 
+						document.getElementById('reminder').style.display = 'block';
+					 }, 10000);
+				} //Use this only when targeting specific form.
+
+			}, false );
+		</script>
+		<?php
+	}
+
 }
