@@ -181,6 +181,10 @@ class Dialog_Starpoint_Donation {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		$this->loader->add_action( 'wp_footer', $plugin_public, 'cf7_frontend_form_submission_events' );
 
+		
+		$this->loader->add_action( 'wp_ajax_nopriv_starpoint_ajax', $plugin_public, 'startpoint_ajax');
+		$this->loader->add_action( 'wp_ajax_starpoint_ajax', $plugin_public, 'startpoint_ajax');
+
 	}
 
 	/**

@@ -109,23 +109,78 @@ class Dialog_Starpoint_Donation_Admin {
 		$cf7formid2 = get_option( 'cf7_form_2_id' );
 
 		$form = '';
-		if($cf7formid && !isset($_SESSION['error'])){
-			$form .= '<div id="donate_init">'; 
-			$form .= '<img class="sp-logo" src="'.plugin_dir_url( __FILE__ ).'../public/img/sp-logo.jpg" width="100"/>'; 
-			$form .= do_shortcode( '[contact-form-7 id='.$cf7formid.' title="Starpoint Donation form"]' ); 
-			$form .= '</div>'; 
-		}
-		if($cf7formid2 && !isset($_SESSION['error'])){
-			$form .= '<div id="donate_otp" style="display:none;">'; 
-			$form .= do_shortcode( '[contact-form-7 id='.$cf7formid2.' title="Starpoint Donation form"]' ); 
-			$form .= '<span id="reminder" style="display:none;">If you still not recieve OTP, kindly refresh your page.</div>'; 
-			$form .= '</div>'; 
-		}
-		if(session_id() && isset($_SESSION['error']) ){
-			$form .= '<span class="error">'.$_SESSION['error'].'</span>';
-			unset($_SESSION['amount']);
-			session_destroy();
-		}
+		// if($cf7formid && !isset($_SESSION['error'])){
+		// 	$form .= '<div id="donate_init">'; 
+		// 	$form .= '<img class="sp-logo" src="'.plugin_dir_url( __FILE__ ).'../public/img/sp-logo.jpg" width="100"/>'; 
+		// 	$form .= do_shortcode( '[contact-form-7 id='.$cf7formid.' title="Starpoint Donation form"]' ); 
+		// 	$form .= '</div>'; 
+		// }
+		// if($cf7formid2 && !isset($_SESSION['error'])){
+		// 	$form .= '<div id="donate_otp" style="display:none;">'; 
+		// 	$form .= do_shortcode( '[contact-form-7 id='.$cf7formid2.' title="Starpoint Donation form"]' ); 
+		// 	$form .= '<span id="reminder" style="display:none;">If you still not recieve OTP, kindly refresh your page.</div>'; 
+		// 	$form .= '</div>'; 
+		// }
+		// if(session_id() && isset($_SESSION['error']) ){
+		// 	$form .= '<span class="error">'.$_SESSION['error'].'</span>';
+		// 	unset($_SESSION['amount']);
+		// 	session_destroy();
+		// }
+		$form .= '<form id="stardonation_form">
+					<img class="sp-logo" src="'.plugin_dir_url( __FILE__ ).'../public/img/sp-logo.jpg" width="100"/>
+					<span id="messages"></span>
+					<div class="loader_parent"><div class="loader"></div></div>
+					<div id="balance_inquire_form">
+						<p class="intro">Donate your starpoint and let join to Breath with us</p>
+						<div class="donate_row_flex">
+							<div class="donate_column">
+								<label> Your name<br>
+									<span class="your-name"><input type="text" name="your-name" value="" size="40" class=""></span>
+								</label>
+							</div>
+							<div class="donate_column">
+								<label> Your email<br>
+									<span class="your-email"><input type="email" name="your-email" value="" size="40" class=""></span> 
+								</label>
+							</div>
+						</div>
+						<div class="donate_row_flex">
+							<div class="donate_column">
+								<label> Your starpoint redeem number* :<br>
+									<span class="redeem-number"><input type="text" name="redeem-number" value="" size="40" class=""></span>
+								</label>
+							</div>
+						</div>
+					</div>
+					<div id="balance_retrieve_form">
+						<p class="intro">How much you wont donate? </p>
+						<div class="donate_row_flex">
+							<div class="donate_column">
+								<label>Your redeemable starpoints balance:<br>
+									<span class="balance_amount"><input type="text" name="balance_amount" value="" size="40" class="" disabled></span>
+								</label>
+							</div>
+							<div class="donate_column">
+								<label>Starpoints redeem amount:*<br>
+									<span class="amount"><input type="text" name="amount" value="" size="40" class=""></span>
+								</label>
+							</div>
+						</div>
+					</div>
+					<div id="otp_confirmation_form">
+						<p class="intro">Add your OTP number and approve it.</p>
+						<div class="donate_row_flex">
+							<div class="donate_column">
+								<label>Starpoints balance:*<br>
+									<span class="otp-number"><input type="text" name="otp-number" value="" size="40" class=""></span> 
+								</label>
+							</div>
+						</div>
+					</div>	
+					<input type="hidden" name="accessToken"/>
+					<input type="hidden" name="step" value="1"/>
+					<p><input type="button" value="Donate" id="stardonate" class="btn-grad button donate-btn"></p>
+				</form>';
 		
 		// Output needs to be return
 		return $form;
@@ -310,7 +365,7 @@ class Dialog_Starpoint_Donation_Admin {
 			$data = $submission->get_posted_data();
 
 
-			$_SESSION['authres'] = $this->request_auth('POST', "grant_type=client_credentials", []);;
+			$_SESSION['authres'] = $this->request_auth('POST', "grant_type=client_credentials", []);
 			$_SESSION['redeemnumber'] = ltrim(str_replace(' ', '', $data['redeem-number']),"0");
 			$_SESSION['amount'] = $data['amount'];
 			$_SESSION['customer_name'] = $data['your-name'];
