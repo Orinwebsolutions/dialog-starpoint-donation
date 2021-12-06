@@ -101,32 +101,8 @@ class Dialog_Starpoint_Donation_Public {
 
 	}
 
-	public function cf7_frontend_form_submission_events()
-	{
-		?>
-		<script type="text/javascript">
-			document.addEventListener( 'wpcf7mailsent', function( event ) {
-				if ( <?php echo get_option( 'cf7_form_id' ); ?> == event.detail.contactFormId ) { //Use this only when targeting specific form.
-					document.getElementById(event.detail.unitTag).style.display = 'none';
-					document.getElementById('donate_otp').style.display = 'block';
-					setTimeout(function(){ 
-						document.getElementById('reminder').style.display = 'block';
-					 }, 10000);
-				} //Use this only when targeting specific form.
-
-			}, false );
-		</script>
-		<?php
-	}
-
 	public function startpoint_ajax()
 	{
-		// if ( !wp_verify_nonce( $_REQUEST['nonce'], "my_user_vote_nonce")) {
-		// 	exit("No naughty business please");
-		//  }   
-
-		// $result = json_encode($_POST['data']);
-		// $result = json_decode($_POST['data']);
 
 		$counter_name = get_option( 'counter_name' );
 		$counter_password = get_option( 'counter_password' );
@@ -134,9 +110,18 @@ class Dialog_Starpoint_Donation_Public {
 
 		$data = array();
 		$return = array();
+		$mobile_number = '';
 		parse_str($_POST['data'], $data);
+
+		if(strlen($data['redeem-number']) > 9){
+			$mobile_number = substr($data['redeem-number'],-9);
+		}else if(strlen($data['redeem-number']) < 9){
+			wp_send_json(['msg' => 'Your Star Points redeem number is incorrect, Please correct it and try again','type' => 'error',]);
+		}else{
+			$mobile_number = $data['redeem-number'];
+		}
 		
-		if(!$data['accessToken'] && $data['step'] == 1){
+		if($data['step'] == 1){
 
 			$authCode = $this->request_auth('POST', "grant_type=client_credentials", []);
 
@@ -144,12 +129,13 @@ class Dialog_Starpoint_Donation_Public {
 				"counterAlias" => $counter_name,
 				"counterAuth" => $counter_password,
 				"subscriberType" => "MOBILE",
-				"subscriberValue" => substr($data['redeem-number'], -9)
+				"subscriberValue" => $mobile_number
 			);
 			
 			$balance = $this->retrieveBalance($customer, $authCode['access_token']);
 			 
-			if($balance['status'] == -99 || $balance['currentBalance'] == 0){
+			if($balance['status'] != 0){
+			// if($balance['status'] == -99){
 				$return = array(
 					'msg' => $balance['errorDesc'],
 					'type' => 'error',
@@ -160,18 +146,21 @@ class Dialog_Starpoint_Donation_Public {
 					'currentBalance' => $balance['currentBalance'],
 					'redeemableBalance' => $balance['redeemableBalance'],
 					'type' => 'auth&bal',
+					'ResponseObj' => $balance
 				);
 			}
 		}
 
 		if($data['accessToken'] && $data['step'] == 2){
 
+
+
 			if($data['accessToken']){
 				$customer = array(
 					"counterAlias" => $counter_name,
 					"counterAuth" => $counter_password,
 					"subscriberType" => "MOBILE",
-					"subscriberValue" => substr($data['redeem-number'], -9),
+					"subscriberValue" => $mobile_number,
 					"amount" => $data['amount'],
 					"accessMode" => "POS"
 				);
@@ -188,6 +177,7 @@ class Dialog_Starpoint_Donation_Public {
 				$return = array(
 					'msg' => $sentOTP['errorMessage'],
 					'type' => 'error',
+					'ResponseObj' => $sentOTP
 				);
 			}
 		}
@@ -197,13 +187,15 @@ class Dialog_Starpoint_Donation_Public {
 			$customer = array(
 				"counterAlias" => $counter_name,
 				"counterAuth" => $counter_password,
+				"billNumber" => "'".rand()."'",
 				"noOfPoints" => $data['amount'],
 				"billValue" => $data['amount'],
 				"subscriberType" => "MOBILE",
-				"subscriberValue" => substr($data['redeem-number'], -9),
+				"subscriberValue" => $mobile_number,
 				"subscriberAuth" => $data['otp-number'],
 				"accessMode" => "POS"
 			);
+
 			$transfer = $this->burnWithAuth($customer, $data['accessToken']);
 
 			//ToDo prepare return value
@@ -217,6 +209,7 @@ class Dialog_Starpoint_Donation_Public {
 				$return = array(
 					'msg' => $transfer['errorDesc'],
 					'type' => 'error',
+					'ResponseObj' => $transfer
 				);
 			}
 		}

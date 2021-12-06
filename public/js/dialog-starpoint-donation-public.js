@@ -29,42 +29,89 @@
    * practising this, we should strive to set a better example in our own work.
    */
   jQuery(document).ready(function () {
+    let step;
+    jQuery("#stardonateback").css("display", "none");
     jQuery("#stardonate").click(function (e) {
       e.preventDefault();
 
       jQuery("#messages").html("").removeClass("success warning");
       jQuery("#stardonation_form").addClass("processing");
 
-      let step = jQuery("#stardonation_form").find('input[name="step"]').val();
+      step = jQuery("#stardonation_form").find('input[name="step"]').val();
       let balance_amount = parseInt(
         jQuery("#stardonation_form").find('input[name="balance_amount"]').val()
       );
       let amount = parseInt(
         jQuery("#stardonation_form").find('input[name="amount"]').val()
       );
+      let rednumber = parseInt(
+        jQuery("#stardonation_form").find('input[name="redeem-number"]').val()
+      );
+
       if (
-        (balance_amount < amount || amount <= 0 || balance_amount <= 0) &&
+        (balance_amount < amount ||
+          amount <= 0 ||
+          balance_amount <= 0 ||
+          isNaN(amount)) &&
         step == 2
       ) {
         if (balance_amount < amount) {
           jQuery("#messages").addClass("warning");
           jQuery("#messages").html(
-            "Can't proceed with it please reduce amount"
+            "It is not possible to redeem more than the Redeemable Amount. Please reduce the Redeem Amount"
           );
           jQuery(this).prop("disabled", false);
           jQuery("#stardonation_form").removeClass("processing");
         } else if (amount <= 0) {
+          jQuery("#messages").addClass("warning");
           jQuery("#messages").html("Please enter Starpoints redeem amount");
+          jQuery("#stardonation_form").removeClass("processing");
           jQuery(this).prop("disabled", false);
         } else if (balance_amount <= 0) {
           jQuery("#messages").html(
-            "Can't proceed now you dont have enough balance with you."
+            "Unable to proceed with donation! You don’t have enough redeemable Star Points balance with you."
           );
+          jQuery("#messages").addClass("warning");
+          jQuery("#stardonation_form").removeClass("processing");
+          jQuery(this).prop("disabled", false);
+        } else if (isNaN(amount)) {
+          jQuery("#messages").addClass("warning");
+          jQuery("#messages").html(
+            "Unable to proceed with the donation! Please enter Star Points redeem amount"
+          );
+          jQuery("#stardonation_form").removeClass("processing");
+          jQuery(this).prop("disabled", false);
         }
       } else {
-        ajaxCall(jQuery("#stardonation_form").serialize());
+        if (!rednumber) {
+          jQuery("#messages").addClass("warning");
+          jQuery("#messages").html(
+            "We are unable proceed without redeemable phone number"
+          );
+          jQuery("#stardonation_form").removeClass("processing");
+          jQuery("#stardonate").prop("disabled", false);
+        } else {
+          console.log("else");
+          ajaxCall(jQuery("#stardonation_form").serialize());
+        }
       }
       // }
+    });
+    jQuery("#stardonateback").click(function (e) {
+      jQuery("#messages").html("").removeClass("success warning");
+      step = jQuery("#stardonation_form").find('input[name="step"]').val();
+      if (step == 2) {
+        jQuery("#stardonation_form").find('input[name="step"]').val(1);
+        jQuery("#otp_confirmation_form").css("display", "none");
+        jQuery("#balance_retrieve_form").css("display", "none");
+        jQuery("#balance_inquire_form").css("display", "block");
+        jQuery("#stardonateback").css("display", "none");
+      } else if (step == 3) {
+        jQuery("#stardonation_form").find('input[name="step"]').val(2);
+        jQuery("#balance_inquire_form").css("display", "none");
+        jQuery("#otp_confirmation_form").css("display", "none");
+        jQuery("#balance_retrieve_form").css("display", "block");
+      }
     });
 
     function ajaxCall(data) {
@@ -94,12 +141,14 @@
             jQuery("#stardonation_form")
               .find('input[name="balance_amount"]')
               .val(response.redeemableBalance);
+            jQuery("#stardonateback").css("display", "block");
           }
 
           if (response.type == "pinSend") {
             jQuery("#stardonation_form").find('input[name="step"]').val(3);
             jQuery("#balance_retrieve_form").css("display", "none");
             jQuery("#otp_confirmation_form").css("display", "block");
+            jQuery("#stardonateback").css("display", "block");
           }
           if (response.type == "burnstarpoint") {
             jQuery(
@@ -115,6 +164,7 @@
             jQuery("#balance_inquire_form").css("display", "block");
             jQuery("#messages").addClass("success");
             jQuery("#messages").html("Thanks for your valuable donation");
+            jQuery("#stardonateback").css("display", "none");
           }
         },
       });

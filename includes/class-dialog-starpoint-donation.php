@@ -160,9 +160,6 @@ class Dialog_Starpoint_Donation {
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'settings_init' );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'admin_menu' );
 
-		$this->loader->add_action( 'wpcf7_submit', $plugin_admin, 'cf7_form_submit', 1, 2 );
-		$this->loader->add_action( 'init', $plugin_admin, 'session_init' );
-		// $this->loader->add_action( 'init', $plugin_admin, 'startpoint_donations' );
 		$this->loader->add_action( 'init', $plugin_admin, 'startpoint_cpt', 0 );
 	}
 
@@ -179,8 +176,6 @@ class Dialog_Starpoint_Donation {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-		$this->loader->add_action( 'wp_footer', $plugin_public, 'cf7_frontend_form_submission_events' );
-
 		
 		$this->loader->add_action( 'wp_ajax_nopriv_starpoint_ajax', $plugin_public, 'startpoint_ajax');
 		$this->loader->add_action( 'wp_ajax_starpoint_ajax', $plugin_public, 'startpoint_ajax');

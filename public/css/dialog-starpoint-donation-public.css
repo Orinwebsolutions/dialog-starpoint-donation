@@ -5,20 +5,15 @@
 .donate_row_flex {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  flex-wrap: nowrap;
-  align-content: space-around;
+  justify-content: center;
+  align-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
 }
 .donate_column {
   padding: 5px;
 }
-.donate_column:first-child {
-  margin-left: -5px;
-}
-.donate_column:last-child {
-  margin-right: -5px;
-}
+
 .donate-btn {
   box-shadow: none;
   border: none;
@@ -54,12 +49,16 @@
   font-weight: 600;
   max-width: calc(100% - 100px);
 }
+p.intro{
+	font-size:20px;
+}
 #donate_init {
   position: relative;
 }
 #stardonation_form {
   padding: 15px;
   position: relative;
+  overflow:hidden;
 }
 form#stardonation_form.processing::after {
   content: " ";
@@ -69,11 +68,12 @@ form#stardonation_form.processing::after {
   background-color: rgba(0, 0, 0, 0.5);
   top: 0;
   left: 0;
+  border-radius: 20px;
 }
 .sp-logo {
   position: absolute;
   right: 15px;
-  top: -20px;
+  top: -15px;
   width: 75px;
 }
 div#donate_otp {
@@ -116,6 +116,10 @@ span#messages.success {
   border: 1px solid;
   padding: 3px 10px;
   border-radius: 5px;
+  max-width: 100%;
+  width: 365px;
+  display: flex;
+  margin-bottom: 15px;
 }
 
 form#stardonation_form.processing .loader {
@@ -133,6 +137,11 @@ form#stardonation_form.processing .loader_parent {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 999;
+}
+.btn-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 /* Safari */
@@ -164,7 +173,7 @@ form#stardonation_form.processing .loader_parent {
 }
 .btn-grad {
   margin: 10px;
-  padding: 15px 45px;
+  padding: 10px 30px;
   text-align: center;
   text-transform: uppercase;
   transition: 0.5s;
@@ -175,8 +184,8 @@ form#stardonation_form.processing .loader_parent {
   display: block;
 }
 
-/* .btn-grad:hover {
-   background-position: right center;
-   color: #fff;
-   text-decoration: none;
- } */
+@media screen and (max-width: 680px) {
+  #stardonation_form {
+    padding: 55px 15px;
+  }
+}

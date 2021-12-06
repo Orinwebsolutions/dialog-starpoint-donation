@@ -13,9 +13,9 @@
  * @package           Dialog_Starpoint_Donation
  *
  * @wordpress-plugin
- * Plugin Name:       Dialog StarPoint donation
+ * Plugin Name:       Dialog Star Points donation
  * Plugin URI:        https://github.com/Orinwebsolutions
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
+ * Description:       Dialog Star Points donations plugin.
  * Version:           1.0.0
  * Author:            Amila Priyankara
  * Author URI:        https://github.com/Orinwebsolutions
